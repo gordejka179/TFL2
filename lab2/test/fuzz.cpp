@@ -9,6 +9,9 @@
 
 using namespace std;
 
+//РЕГУЛЯРКА ИЗ УСЛОВИЯ:
+//(dcdc*c(d*|e*e)|e(cc)*(ee|d)|cac|dd)*c(a|c|d|e)
+
 //генерация случайной строки, заданной длины n, состоящей из символов 
 //фиксированного алфавита
 string getRandomString(int n, const string& alphabet) {
@@ -53,7 +56,7 @@ int getLetterNum(const char c, const string& alphabet){
 //например, из состояния 0 можно перейти: 
 //по букве 'a' нет перехода,
 //по букве 'с' в состояние 5,
-//по букве 'd' в состояние 6,
+//по букве 'd' в состояние 2,
 //по букве 'e' в состояние 1
 //также возвращаем массив финальных состояний
 pair<array<array<int, 4>, 21>, array<int, 7>> initDFA(){
@@ -96,6 +99,7 @@ pair<array<array<int, 4>, 21>, array<int, 7>> initDFA(){
 //для каждого состояния будем хранить массив(вектор) из 4 элементов-сетов
 //первый сет содержит в себе номера вершин, в которые можно попасть по букве 'a' 
 //второй - по букве 'c' и так далее
+//если нельзя попасть ни в какую вершину, то -1
 //также возвращаем массив финальных состояний 
 pair<vector<vector<set<int>>>, array<int, 1>> initNFA(){
     vector<vector<set<int>>> edges;
@@ -252,7 +256,6 @@ bool checkNFA(vector<vector<set<int>>>& nfa, const string& word, const string& a
         newStates.clear();
     }
 
-    //поскольку среди финальных состояний лишь 1, то обойдемся лишь циклом
     for (int i: oldStates){
         if (i == nfaFinalStates[0]){
             return true;
@@ -260,6 +263,39 @@ bool checkNFA(vector<vector<set<int>>>& nfa, const string& word, const string& a
     }
     return false;
 }
+
+
+
+
+
+//проверка на принадлежность слова переключающемуся конечному автомату (ПКА)
+bool checkAFA(vector<vector<set<int>>>& nfa, const string& word, const string& alphabet, array<int,1> nfaFinalStates){
+    set<int> oldStates;
+    set<int> newStates;
+    oldStates.insert(0); //добавляем стартовую вершину
+
+    for (int i = 0; i < word.size(); i++){
+        for (int q1: oldStates){
+            for (int q2: nfa[q1][getLetterNum(word[i], alphabet)]){
+                //cout << q2 << endl;
+                if (q2 != -1){
+                    newStates.insert(q2);
+                }
+            }
+        }
+        oldStates = newStates;
+        newStates.clear();
+    }
+
+    for (int i: oldStates){
+        if (i == nfaFinalStates[0]){
+            return true;
+        }
+    }
+    return false;
+}
+
+
 
 int main(){
     string alphabet = "acde";
