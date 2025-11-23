@@ -222,8 +222,8 @@ pair<vector<vector<set<int>>>, array<int, 1>> initNFA(){
 //также как с дка, но вернем 3 массива
 //первый - с переходами
 //второй и третий - для финальных состояний в 1-ой и 2-ой частях ПКА соответственно
-tuple<array<array<int, 4>, 28>, array<int, 7>, array<int, 7>> initAFA(){
-    array<array<int, 4>, 28> afa = {{
+tuple<array<array<int, 4>, 32>, array<int, 7>, array<int, 11>> initAFA(){
+    array<array<int, 4>, 32> afa = {{
         //первая часть:
         {-1, 5, 2, 1},
         {-1, 7, 0, 8},
@@ -247,12 +247,16 @@ tuple<array<array<int, 4>, 28>, array<int, 7>, array<int, 7>> initAFA(){
         {-1, 14, 6, 1},
         {-1, 13, 6, 9},
         //вторая часть:
-        {22, 21, 21, 25},
+        {22, 21, 21, 27},
         {21, 23, 21, 21},
         {21, 24, 21, 21},
-        {21, -1, 21, 21},
+        {21, 25, 21, 21},
         {21, 26, 21, 21},
-        {21, 27, 21, 21},
+        {21, -1, 21, 21},
+        {21, 28, 21, 21},
+        {21, 29, 21, 21},
+        {21, 30, 21, 21},
+        {21, 31, 21, 21},
         {21, -1, 21, 21}
     }};
 
@@ -265,7 +269,7 @@ tuple<array<array<int, 4>, 28>, array<int, 7>, array<int, 7>> initAFA(){
     afaFinalStates1[5] = 19;
     afaFinalStates1[6] = 20;
 
-    array<int, 7> afaFinalStates2;
+    array<int, 11> afaFinalStates2;
     afaFinalStates2[0] = 21;
     afaFinalStates2[1] = 22;
     afaFinalStates2[2] = 23;
@@ -273,6 +277,10 @@ tuple<array<array<int, 4>, 28>, array<int, 7>, array<int, 7>> initAFA(){
     afaFinalStates2[4] = 25;
     afaFinalStates2[5] = 26;
     afaFinalStates2[6] = 27;
+    afaFinalStates2[7] = 28;
+    afaFinalStates2[8] = 29;
+    afaFinalStates2[9] = 30;
+    afaFinalStates2[10] = 31;
     return {afa, afaFinalStates1, afaFinalStates2};
 }
 
@@ -327,7 +335,7 @@ bool checkNFA(const vector<vector<set<int>>>& nfa, const string& word, const str
 
 
 //проверка на принадлежность слова переключающемуся конечному автомату (ПКА)
-bool checkAFA(const array<array<int, 4>, 28>& dfa, const string& word, const string& alphabet, const array<int, 7>& finalStates1, const array<int, 7>& finalStates2){
+bool checkAFA(const array<array<int, 4>, 32>& dfa, const string& word, const string& alphabet, const array<int, 7>& finalStates1, const array<int, 11>& finalStates2){
     int currentState = 21; //текущее состояние
     for (int i = 0; i < word.size(); i++){
         currentState = dfa[currentState][getLetterNum(word[i], alphabet)];
@@ -337,12 +345,16 @@ bool checkAFA(const array<array<int, 4>, 28>& dfa, const string& word, const str
         }
     }
 
-    if ((currentState != finalStates2[0]) && (currentState != finalStates2[1]) && (currentState != finalStates2[2]) 
-    && (currentState != finalStates2[3]) && (currentState != finalStates2[4]) && (currentState != finalStates2[5]) && (currentState != finalStates2[6]))
-    {
+    bool doesBelongSecondPart = false;
+    for (int i = 0; i < 11; i++){
+        if (currentState == finalStates2[i]){
+            doesBelongSecondPart = true;
+        }
+    } 
+
+    if (!doesBelongSecondPart){
         return false;
     }
-
 
     currentState = 0; //текущее состояние
     for (int i = 0; i < word.size(); i++){
@@ -380,19 +392,19 @@ int main(){
     tie(nfa, nfaFinalStates) = initNFA();
 
     //ПКА
-    array<array<int, 4>, 28> afa;
+    array<array<int, 4>, 32> afa;
     array<int, 7> afaFinalStates1;
-    array<int, 7> afaFinalStates2;
+    array<int, 11> afaFinalStates2;
     tie(afa, afaFinalStates1, afaFinalStates2) = initAFA();
 
     int isError = 0;
     string errorWord = "";
     //будем генерировать слова длины от 0 до 100
     for (int i = 0; i < 100; i++){
-        //по 50 слов каждой длины
-        for (int j = 0; j < 50; j++){
+        //по 1000 слов каждой длины
+        for (int j = 0; j < 1000; j++){
             string word = getRandomString(i, alphabet);
-            //string word = "edce";
+            //string word = "aeeed";
             bool r1 = checkRegex(word);
             bool r2 = checkDFA(dfa, word, alphabet, dfaFinalStates);
             bool r3 = checkNFA(nfa, word, alphabet, nfaFinalStates);
@@ -400,7 +412,9 @@ int main(){
             if ((r1 != r2) || (r1 != r3) || (r1 != r4)){
                 //cout << 57 << r1 << r2 << r3 << r4 << endl;
                 isError = 1;
-                errorWord = word;
+                if (errorWord == ""){
+                    errorWord = word;
+                }
             }
         }
     }
