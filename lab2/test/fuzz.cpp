@@ -248,23 +248,19 @@ tuple<vector<vector<int>>, vector<int>, vector<int>> initAFA1(){
         {-1, 13, 6, 9},
 
         //вторая часть:
-        {22, 21, 21, 26},
-        {21, 23, 21, 21},
-        {21, 24, 21, 21},
-        {21, 25, 21, 21},
-        {21, -1, 21, 21},
-
-        {21, 27, 21, 21},
-        {21, 28, 21, 21},
-        {21, 29, 21, 21},
-        {21, 30, 21, 21},
-        {21, 31, 21, 21},
+        {21, 21, 21, 22},
+        {21, 23, 21, 22},
+        {21, 24, 21, 22},
+        {21, 25, 21, 22},
+        {21, 26, 21, 22},
+        {21, 27, 21, 22},
         {-1, 22, -1, -1}
+
     }};
 
     vector<int> afaFinalStates1{10, 15, 16, 17, 18, 19, 20};
 
-    vector<int> afaFinalStates2{21, 22, 23, 24, 25, 26, 27, 28, 29, 30};
+    vector<int> afaFinalStates2{21, 22, 23, 24, 25, 26};
     return {afa, afaFinalStates1, afaFinalStates2};
 }
 
@@ -458,7 +454,7 @@ int main(){
             string word = getRandomString(i, alphabet);
             //string word = "eccccccdca";
             //eccccccdcd
-            word = "cc";
+
             bool r1 = checkRegex(word);
             bool r2 = checkDFA(dfa, word, alphabet, dfaFinalStates);
             bool r3 = checkNFA(nfa, word, alphabet, nfaFinalStates);
