@@ -59,8 +59,8 @@ int getLetterNum(const char c, const string& alphabet){
 //по букве 'd' в состояние 2,
 //по букве 'e' в состояние 1
 //также возвращаем массив финальных состояний
-pair<array<array<int, 4>, 21>, array<int, 7>> initDFA(){
-    array<array<int, 4>, 21> dfa = {{
+pair<vector<vector<int>>, vector<int>> initDFA(){
+    vector<vector<int>> dfa = {{
         {-1, 5, 2, 1},
         {-1, 7, 0, 8},
         {-1, 3, 0, -1},
@@ -84,14 +84,14 @@ pair<array<array<int, 4>, 21>, array<int, 7>> initDFA(){
         {-1, 13, 6, 9}
     }};
 
-    array<int, 7> dfaFinalStates;
-    dfaFinalStates[0] = 10;
-    dfaFinalStates[1] = 15;
-    dfaFinalStates[2] = 16;
-    dfaFinalStates[3] = 17;
-    dfaFinalStates[4] = 18;
-    dfaFinalStates[5] = 19;
-    dfaFinalStates[6] = 20;
+    vector<int> dfaFinalStates;
+    dfaFinalStates.push_back(10);
+    dfaFinalStates.push_back(15);
+    dfaFinalStates.push_back(16);
+    dfaFinalStates.push_back(17);
+    dfaFinalStates.push_back(18);
+    dfaFinalStates.push_back(19);
+    dfaFinalStates.push_back(20);
     return {dfa, dfaFinalStates};
 }
 
@@ -101,7 +101,7 @@ pair<array<array<int, 4>, 21>, array<int, 7>> initDFA(){
 //второй - по букве 'c' и так далее
 //если нельзя попасть ни в какую вершину, то -1
 //также возвращаем массив финальных состояний 
-pair<vector<vector<set<int>>>, array<int, 1>> initNFA(){
+pair<vector<vector<set<int>>>, vector<int>> initNFA(){
     vector<vector<set<int>>> edges;
 
     //начинаем для вершины с номером 0
@@ -213,17 +213,17 @@ pair<vector<vector<set<int>>>, array<int, 1>> initNFA(){
             {-1}
         }
     );
-    array<int, 1> nfaFinalStates;
-    nfaFinalStates[0] = 14;
+    vector<int> nfaFinalStates;
+    nfaFinalStates.push_back(14);
     return {edges, nfaFinalStates};
 }
 
-//проверка на принадлежность ПКА
+//задаём ПКА1
 //также как с дка, но вернем 3 массива
 //первый - с переходами
-//второй и третий - для финальных состояний в 1-ой и 2-ой частях ПКА соответственно
-tuple<array<array<int, 4>, 32>, array<int, 7>, array<int, 11>> initAFA(){
-    array<array<int, 4>, 32> afa = {{
+//второй и третий - для финальных состояний в 1-ой и 2-ой частях ПКА1 соответственно
+tuple<vector<vector<int>>, vector<int>, vector<int>> initAFA1(){
+    vector<vector<int>> afa = {{
         //первая часть:
         {-1, 5, 2, 1},
         {-1, 7, 0, 8},
@@ -246,56 +246,78 @@ tuple<array<array<int, 4>, 32>, array<int, 7>, array<int, 11>> initAFA(){
         {15, 18, 19, 20},
         {-1, 14, 6, 1},
         {-1, 13, 6, 9},
+
         //вторая часть:
-        {22, 21, 21, 27},
+        {22, 21, 21, 26},
         {21, 23, 21, 21},
         {21, 24, 21, 21},
         {21, 25, 21, 21},
-        {21, 26, 21, 21},
         {21, -1, 21, 21},
+
+        {21, 27, 21, 21},
         {21, 28, 21, 21},
         {21, 29, 21, 21},
         {21, 30, 21, 21},
         {21, 31, 21, 21},
-        {21, -1, 21, 21}
+        {-1, 22, -1, -1}
     }};
 
-    array<int, 7> afaFinalStates1;
-    afaFinalStates1[0] = 10;
-    afaFinalStates1[1] = 15;
-    afaFinalStates1[2] = 16;
-    afaFinalStates1[3] = 17;
-    afaFinalStates1[4] = 18;
-    afaFinalStates1[5] = 19;
-    afaFinalStates1[6] = 20;
+    vector<int> afaFinalStates1{10, 15, 16, 17, 18, 19, 20};
 
-    array<int, 11> afaFinalStates2;
-    afaFinalStates2[0] = 21;
-    afaFinalStates2[1] = 22;
-    afaFinalStates2[2] = 23;
-    afaFinalStates2[3] = 24;
-    afaFinalStates2[4] = 25;
-    afaFinalStates2[5] = 26;
-    afaFinalStates2[6] = 27;
-    afaFinalStates2[7] = 28;
-    afaFinalStates2[8] = 29;
-    afaFinalStates2[9] = 30;
-    afaFinalStates2[10] = 31;
+    vector<int> afaFinalStates2{21, 22, 23, 24, 25, 26, 27, 28, 29, 30};
     return {afa, afaFinalStates1, afaFinalStates2};
+}
+
+//задаём вторую часть ПКА2 как НКА
+pair<vector<vector<set<int>>>, vector<int>> initNFAForSecondPartInSecondAFA(){
+    vector<vector<set<int>>> edges;
+    edges.push_back({
+            {-1},
+            {0, 1},
+            {0},
+            {0}
+        }
+    );
+    edges.push_back({
+            {2},
+            {3},
+            {0, 3},
+            {0, 3}
+        }
+    );
+    edges.push_back({
+            {-1},
+            {0},
+            {-1},
+            {-1}
+        }
+    );
+    edges.push_back({
+            {-1},
+            {-1},
+            {-1},
+            {-1}
+        }
+    );
+    
+    vector<int> nfaFinalStates;
+    nfaFinalStates.push_back(2);
+    nfaFinalStates.push_back(3);
+    return {edges, nfaFinalStates};
+    
 }
 
 
 //проверка на принадлежность слова детерминированному конечному автомату
-bool checkDFA(const array<array<int, 4>, 21>& dfa, const string& word, const string& alphabet, const array<int, 7>& finalStates){
+bool checkDFA(const vector<vector<int>>& dfa, const string& word, const string& alphabet, const vector<int>& finalStates){
     int currentState = 0; //текущее состояние
     for (int i = 0; i < word.size(); i++){
         currentState = dfa[currentState][getLetterNum(word[i], alphabet)];
-        //cout << currentState << " " << word[i] << endl;
         if (currentState == -1){
             return false;
         }
     }
-    for (int i = 0; i < 7; i++){
+    for (int i = 0; i < finalStates.size(); i++){
         if (currentState == finalStates[i]){
             return true;
         }
@@ -304,7 +326,7 @@ bool checkDFA(const array<array<int, 4>, 21>& dfa, const string& word, const str
 }
 
 //проверка на принадлежность слова недетерминированному конечному автомату
-bool checkNFA(const vector<vector<set<int>>>& nfa, const string& word, const string& alphabet, const array<int,1> nfaFinalStates){
+bool checkNFA(const vector<vector<set<int>>>& nfa, const string& word, const string& alphabet, const vector<int>& nfaFinalStates){
     set<int> oldStates;
     set<int> newStates;
     oldStates.insert(0); //добавляем стартовую вершину
@@ -323,8 +345,10 @@ bool checkNFA(const vector<vector<set<int>>>& nfa, const string& word, const str
     }
 
     for (int i: oldStates){
-        if (i == nfaFinalStates[0]){
-            return true;
+        for (int j: nfaFinalStates){
+            if (i == j){
+                return true;
+            }
         }
     }
     return false;
@@ -335,18 +359,17 @@ bool checkNFA(const vector<vector<set<int>>>& nfa, const string& word, const str
 
 
 //проверка на принадлежность слова переключающемуся конечному автомату (ПКА)
-bool checkAFA(const array<array<int, 4>, 32>& dfa, const string& word, const string& alphabet, const array<int, 7>& finalStates1, const array<int, 11>& finalStates2){
+bool checkAFA1(const vector<vector<int>>& dfa, const string& word, const string& alphabet, const vector<int>& finalStates1, const vector<int>& finalStates2){
     int currentState = 21; //текущее состояние
     for (int i = 0; i < word.size(); i++){
         currentState = dfa[currentState][getLetterNum(word[i], alphabet)];
-        //cout << currentState << " " << word[i] << endl;
         if (currentState == -1){
             return false;
         }
     }
 
     bool doesBelongSecondPart = false;
-    for (int i = 0; i < 11; i++){
+    for (int i = 0; i < finalStates2.size(); i++){
         if (currentState == finalStates2[i]){
             doesBelongSecondPart = true;
         }
@@ -363,7 +386,7 @@ bool checkAFA(const array<array<int, 4>, 32>& dfa, const string& word, const str
             return false;
         }
     }
-    for (int i = 0; i < 7; i++){
+    for (int i = 0; i < finalStates1.size(); i++){
         if (currentState == finalStates1[i]){
             return true;
         }
@@ -373,14 +396,36 @@ bool checkAFA(const array<array<int, 4>, 32>& dfa, const string& word, const str
 
 }
 
+//проверка для ПКА2
+//одна из частей - дка, другая - нка
+bool checkAFA2(const string& word, const string& alphabet,
+    const vector<vector<set<int>>>& nfa, const vector<int>& nfaFinalStates, 
+    const vector<vector<int>>& dfa, const vector<int>& dfaFinalStates){
+    bool r3 = checkNFA(nfa, word, alphabet, nfaFinalStates);
+    if (!r3){
+        return false;
+    }
+
+    bool r4 = checkDFA(dfa, word, alphabet, dfaFinalStates);
+    if (!r4){
+        return false;
+    }
+
+    return true;
+
+}
+
+
+
 
 
 int main(){
     string alphabet = "acde";
 
     //ДКА
-    array<array<int, 4>, 21> dfa;
-    array<int, 7> dfaFinalStates;
+    vector<vector<int>> dfa;
+    vector<int> dfaFinalStates;
+    
     tie(dfa, dfaFinalStates) = initDFA();
 
     //НКА
@@ -388,32 +433,43 @@ int main(){
     //первый сет содержит в себе номера вершин, в которые можно попасть по букве 'a' 
     //второй - по букве 'c' и так далее
     vector<vector<set<int>>> nfa; 
-    array<int, 1> nfaFinalStates;
+    vector<int> nfaFinalStates;
     tie(nfa, nfaFinalStates) = initNFA();
 
-    //ПКА
-    array<array<int, 4>, 32> afa;
-    array<int, 7> afaFinalStates1;
-    array<int, 11> afaFinalStates2;
-    tie(afa, afaFinalStates1, afaFinalStates2) = initAFA();
+    //ПКА1
+    vector<vector<int>> afa;
+    vector<int> afaFinalStates1;
+    vector<int> afaFinalStates2;
+    tie(afa, afaFinalStates1, afaFinalStates2) = initAFA1();
+
+    //ПКА2
+    vector<vector<set<int>>> nfaForSecondPartInSecondAFA; 
+    vector<int> nfaForSecondPartInSecondAFAFinalStates;
+    tie(nfaForSecondPartInSecondAFA, nfaForSecondPartInSecondAFAFinalStates) = initNFAForSecondPartInSecondAFA();
 
     int isError = 0;
     string errorWord = "";
-    //будем генерировать слова длины от 0 до 100
-    for (int i = 0; i < 100; i++){
-        //по 1000 слов каждой длины
-        for (int j = 0; j < 1000; j++){
+
+    for (int i = 1; i < 60; i++){
+        if (isError){
+            break;
+        }
+        for (int j = 0; j < 100000; j++){
             string word = getRandomString(i, alphabet);
-            //string word = "aeeed";
+            //string word = "eccccccdca";
+            //eccccccdcd
+            word = "cc";
             bool r1 = checkRegex(word);
             bool r2 = checkDFA(dfa, word, alphabet, dfaFinalStates);
             bool r3 = checkNFA(nfa, word, alphabet, nfaFinalStates);
-            bool r4 = checkAFA(afa, word, alphabet, afaFinalStates1, afaFinalStates2);
-            if ((r1 != r2) || (r1 != r3) || (r1 != r4)){
-                //cout << 57 << r1 << r2 << r3 << r4 << endl;
+            bool r4 = checkAFA1(afa, word, alphabet, afaFinalStates1, afaFinalStates2);
+            bool r5 = checkAFA2(word, alphabet, nfaForSecondPartInSecondAFA, nfaForSecondPartInSecondAFAFinalStates, dfa, dfaFinalStates);
+            if ((r1 != r2) || (r1 != r3) || (r1 != r4)|| (r1 != r5)){
+                cout << 57 << r1 << r2 << r3 << r4 << endl;
                 isError = 1;
                 if (errorWord == ""){
                     errorWord = word;
+                    break;
                 }
             }
         }
